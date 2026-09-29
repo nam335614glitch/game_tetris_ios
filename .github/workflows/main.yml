@@ -1,0 +1,22 @@
+name: Build iOS IPA
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.5'
+      - run: flutter pub get
+      - run: flutter build ios --no-codesign --release
+      - name: Create IPA Thần Tốc
+        run: |
+          mkdir -p Payload
+          mv build/ios/iphoneos/Runner.app Payload/
+          zip -r app-release.ipa Payload
+      - name: Upload IPA Product
+        uses: actions/upload-artifact@v4
+        with:
+          name: iPhone-7Plus-Game
+          path: app-release.ipa
